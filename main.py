@@ -1,5 +1,6 @@
 # ~ pkg import list ~
 import pandas as pd
+import openpyxl
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.cluster import KMeans
 from sklearn.ensemble import RandomForestRegressor
@@ -7,31 +8,31 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_absolute_error
 
-df = pd.read_excel('')
+df = pd.read_excel('Alzheimers_Disease_dataset.xlsx')
 
 # ~ part c: data normalization and cleaning! ~
-# dropping all rows except those mentions [search criteria
-storage = df[df['Class'] == 'search criteria'].copy()
-print(storage.shape)
+# dropping all rows except those mentions 'Cognitive Decline'
+cog = df[df['Class'] == 'Cognitive Decline'].copy()
+print(cog.shape)
 
 # if row has empty Data_Value == dropped from analysis
-n = len(storage)
-storage = storage.dropna(subset=['Data_Value'])
-print('dropped', n - len(storage), 'rows with no Data_Value')
+n = len(cog)
+cog = cog.dropna(subset=['Data_Value'])
+print('dropped', n - len(cog), 'rows with no Data_Value')
 
 # columns that provide no added value to analysis
-storage = storage.drop(columns=['Data_Value_Footnote_Symbol', 'Data_Value_Footnote', 'Data_Value_Alt'])
+cog = cog.drop(columns=['Data_Value_Footnote_Symbol', 'Data_Value_Footnote', 'Data_Value_Alt'])
 
 # if 'StratificationCategory2' == 'Overall', 'Stratification2' also == 'Overall'
-storage['StratificationCategory2'] = cog['StratificationCategory2'].fillna('Overall')
-storage['Stratification2'] = cog['Stratification2'].fillna('Overall')
+cog['StratificationCategory2'] = cog['StratificationCategory2'].fillna('Overall')
+cog['Stratification2'] = cog['Stratification2'].fillna('Overall')
 
 # looking for rows with no confidence interval and dropping them
-storage = storage.dropna(subset=['Low_Confidence_Limit', 'High_Confidence_Limit'])
+cog = cog.dropna(subset=['Low_Confidence_Limit', 'High_Confidence_Limit'])
 print('final shape:', cog.shape)
 
 # turn the category columns into numbers so sklearn can use them
-cat_cols = ['volum', 'Topic', 'Stratification1', 'Stratification2']
+cat_cols = ['LocationDesc', 'Topic', 'Stratification1', 'Stratification2']
 for c in cat_cols:
     cog[c + '_enc'] = LabelEncoder().fit_transform(cog[c].astype(str))
 
@@ -67,4 +68,5 @@ pred = rf.predict(X_test)
 print('random forest -> r2:', round(r2_score(y_test, pred), 3), 'mae:', round(mean_absolute_error(y_test, pred), 2))
 
 print(pd.Series(rf.feature_importances_, index=features).sort_values(ascending=False))
+
 
