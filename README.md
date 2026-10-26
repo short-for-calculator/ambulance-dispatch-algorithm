@@ -1,3 +1,7 @@
+~ cognitive-decline-state-analysis ~
+Predicts what percentage of a demographic group in a state reports cognitive decline from the state, topic, demographic, and year.
+
+
 Originally, this project was coursework for an artificial intelligence and machine learning class. 
 
 The program in this form lacks the dataset it is supposed to analyze, however, some 
